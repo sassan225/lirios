@@ -1,404 +1,89 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Liriosss -w-</title>
+<meta charset="UTF-8">
+<title>awdjk duerme bonito</title>
 <style>
-    html, body { height: 100%; margin: 0; background: #000; }
-    body { display: flex; justify-content: center; align-items: center; }
-    canvas { width: 100vw; height: 100vh; display: block; }
-    .hint {
-      position: fixed; left: 12px; bottom: 12px; color: #cfeefc; font-family: system-ui;
-      background: rgba(255,255,255,0.03); padding: 8px 10px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.04); font-size: 13px;
-    }
-    .title {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #ffffff;
-      font-family: 'Arial', sans-serif;
-      font-size: 48px;
-      text-align: center;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      z-index: 10;
-    }
-  </style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+  }
 
+  h1 {
+    position: absolute;
+    font-size: 3em;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    z-index: 10;
+  }
+
+  .firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: fly 4s linear forwards;
+    pointer-events: none;
+    background: #ffff66;
+    box-shadow: 0 0 10px #ffff66, 0 0 20px #ffff66;
+  }
+
+  @keyframes fly {
+    0% { transform: translate(0,0) scale(0.5); opacity: 1; }
+    50% { transform: translate(var(--dx), var(--dy)) scale(1); }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+  }
+</style>
 </head>
 <body>
-    <div class="title">:D</div>
-<canvas id="c"></canvas>
-<div class="hint"> duerme biennn, gud naisss 😿</div>
+<h1>duerme bonito si¿? dkaw (disculpas por liarme con lo otro) 3:</h1>
+<small>si le haces tap aparecen luciernagitas asjkda</small>
 
 <script>
-(() => {
-  const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d', { alpha: false });
+function createFirefly(x, y) {
+  const firefly = document.createElement('div');
+  firefly.classList.add('firefly');
+  firefly.style.left = x + 'px';
+  firefly.style.top = y + 'px';
 
-  function fit() {
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.floor(innerWidth * dpr);
-    canvas.height = Math.floor(innerHeight * dpr);
-    canvas.style.width = innerWidth + 'px';
-    canvas.style.height = innerHeight + 'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  // Movimiento aleatorio
+  const dx = (Math.random() - 0.5) * 200 + 'px';
+  const dy = (Math.random() - 0.5) * 200 + 'px';
+  firefly.style.setProperty('--dx', dx);
+  firefly.style.setProperty('--dy', dy);
+
+  // Tamaño aleatorio
+  const size = Math.random() * 6 + 4; // 4px a 10px
+  firefly.style.width = size + 'px';
+  firefly.style.height = size + 'px';
+  firefly.style.boxShadow = `0 0 ${size*1.5}px #ffff66, 0 0 ${size*3}px #ffff66`;
+
+  document.body.appendChild(firefly);
+  setTimeout(() => firefly.remove(), 4000 + Math.random()*2000);
+}
+
+// Luciérnagas automáticas
+setInterval(() => {
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * window.innerHeight;
+  createFirefly(x, y);
+}, 500);
+
+// Luciérnagas al tocar
+document.addEventListener('click', e => {
+  for(let i=0;i<7;i++){
+    createFirefly(e.clientX, e.clientY);
   }
-  window.addEventListener('resize', fit);
-  fit();
-
-  const W = () => canvas.width / (window.devicePixelRatio || 1);
-  const H = () => canvas.height / (window.devicePixelRatio || 1);
-
-  // util
-  const rand = (a,b) => a + Math.random()*(b-a);
-  const TAU = Math.PI*2;
-
-  // scene params
-  const lilies = []; // each: {x,y,scale,phase,colorPetal}
-  const fireflies = [];
-  const centerY = H()*0.6;
-
-  // create 3 lilies
-  (function initLilies(){
-    const gap = W() * 0.18;
-    const mid = W()/2;
-    const baseY = centerY + 40;
-    for(let i=-1;i<=1;i++){
-      const x = mid + i*gap + rand(-20,20);
-      const y = baseY + Math.abs(i)*10 + rand(-8,8);
-      lilies.push({
-        x, y,
-        scale: 0.9 + Math.abs(i)*-0.05 + rand(-0.06,0.06),
-        floatPhase: Math.random()*TAU,
-        tilt: rand(-0.14,0.14),
-        petalTone: [
-          ['#fff7fb','#ffdff0','#f2c1e6'],
-          ['#fffaf3','#ffe6d9','#ffd6b3'],
-          ['#fff7ff','#ffe6fb','#f3d1ff']
-        ][i+1],
-        leafTone: ['#0f5b3d','#1b7b4f'][Math.round(Math.random())]
-      });
-    }
-  })();
-
-  // create fireflies
-  for(let i=0;i<18;i++){
-    fireflies.push({
-      x: rand(0,W()), y: rand(0,H()*0.6),
-      r: rand(0.9,2.4), vx: rand(-0.2,0.2), vy: rand(-0.05,0.05),
-      phase: Math.random()*TAU, glow: rand(0.2,0.95)
-    });
-  }
-
-  // draw soft background gradient & subtle grain
-  function drawBackground() {
-    const w = W(), h = H();
-    // deep radial vignette
-    const g = ctx.createLinearGradient(0,0,0,h);
-    g.addColorStop(0, '#071018');
-    g.addColorStop(0.45, '#071017');
-    g.addColorStop(1, '#000000');
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,w,h);
-
-    // faint stars / particles
-    for(let i=0;i<60;i++){
-      const sx = (i*37)%w + (i*3)%10;
-      const sy = (i*71)% (h*0.6);
-      const alpha = 0.02 + (i%7)/200;
-      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-      ctx.fillRect((sx+ (Math.sin(i)*3)) , sy, 1,1);
-    }
-  }
-
-  // draw water reflection shimmer (soft horizontal blur bands)
-  function drawWaterShimmer(t) {
-    const w = W(), h = H();
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    for(let i=0;i<6;i++){
-      const y = centerY + i*16 + Math.sin(t*0.0008 + i)*6;
-      const grd = ctx.createLinearGradient(0,y-40,0,y+40);
-      grd.addColorStop(0, 'rgba(255,255,255,0)');
-      grd.addColorStop(0.5, 'rgba(255,255,255,0.02)');
-      grd.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, y-40, w, 80);
-    }
-    ctx.restore();
-  }
-
-  // draw a single wide lily leaf (lilypad)
-  function drawLeaf(x,y,scale,angle,leafTone) {
-    ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(angle);
-    ctx.scale(scale, scale);
-    // shadow under leaf
-    ctx.beginPath();
-    ctx.ellipse(0, 6, 78, 28, 0, 0, TAU);
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
-    ctx.fill();
-
-    // leaf main body: layered radial gradients
-    const lg = ctx.createRadialGradient(-18,-6,10, 0,0,120);
-    lg.addColorStop(0, 'rgba(255,255,255,0.04)');
-    lg.addColorStop(0.2, 'rgba(255,255,255,0.015)');
-    lg.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = lg;
-    ctx.beginPath();
-    ctx.ellipse(0,0,80,34,0,0,TAU);
-    ctx.fill();
-
-    // green overlay
-    ctx.beginPath();
-    ctx.ellipse(0,0,72,30,0,0,TAU);
-    const greenGrad = ctx.createLinearGradient(-60,0,60,0);
-    greenGrad.addColorStop(0, '#0b6b46');
-    greenGrad.addColorStop(0.6, leafTone === '#0f5b3d' ? '#1b7b4f' : '#2a8a55');
-    greenGrad.addColorStop(1, '#0b4f35');
-    ctx.fillStyle = greenGrad;
-    ctx.fill();
-
-    // vein stroke
-    ctx.beginPath();
-    ctx.moveTo(-40,0); ctx.quadraticCurveTo(-4,-6,40,0);
-    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
-    ctx.lineWidth = 1.8;
-    ctx.stroke();
-
-    ctx.restore();
-  }
-
-  // draw a petal centered with rotation (petal as ellipse with gradient & inner sheen)
-  function drawPetal(cx0, cy0, angle, length, width, toneA, toneB, offsetRot=0, opacity=1) {
-    ctx.save();
-    ctx.translate(cx0, cy0);
-    ctx.rotate(angle + offsetRot);
-    // base petal
-    const petalGrad = ctx.createLinearGradient(-length/2,0,length/2,0);
-    petalGrad.addColorStop(0, toneA);
-    petalGrad.addColorStop(0.6, toneB);
-    petalGrad.addColorStop(1, 'rgba(255,255,255,0.06)');
-    ctx.fillStyle = petalGrad;
-    ctx.beginPath();
-    ctx.ellipse(length*0.28, 0, width, length, Math.PI*0.12, 0, TAU);
-    ctx.globalAlpha = opacity;
-    ctx.fill();
-
-    // inner sheen
-    ctx.beginPath();
-    ctx.ellipse(length*0.18, -Math.abs(length)*0.06, width*0.55, length*0.6, Math.PI*0.08, 0, TAU);
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fill();
-
-    ctx.restore();
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1;
-  }
-
-  // draw full lily flower (petals around center)
-  function drawLily(x, y, scale, time, params) {
-    const { tilt, petalTone } = params;
-    const baseAngle = Math.sin(time*0.0009 + params.floatPhase) * 0.08 + tilt;
-    // stem behind
-    ctx.save();
-    ctx.strokeStyle = 'rgba(50,30,15,0.9)';
-    ctx.lineWidth = 6 * scale;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(x, y + 60*scale);
-    ctx.quadraticCurveTo(x + 6*scale, y + 20*scale, x, y - 8*scale);
-    ctx.stroke();
-    ctx.restore();
-
-    // leaf (lilypad) under flower (ellipse)
-    drawLeaf(x - 34*scale, y + 18*scale, 0.8*scale, -0.4, params.leafTone);
-
-    // petals arrangement
-    const petalCount = 10 + Math.round(4 * (1-scale)); // 10-13
-    const radius = 18 * scale + 48 * scale;
-    for(let i=0;i<petalCount;i++){
-      const a = (i / petalCount) * TAU + baseAngle + i*0.02;
-      // petal length & width vary with layer
-      const len = radius + 6 * Math.sin(i*0.9 + time*0.002);
-      const wid = 18 * scale + (i%2?2: -2);
-      const toneA = petalTone[0];
-      const toneB = petalTone[1];
-      // slight radial offset so petals don't all share exact origin
-      const px = x + Math.cos(a) * (10*scale);
-      const py = y + Math.sin(a) * (6*scale) - 6*scale;
-      // depth: draw inner smaller, outer bigger, add transparency for distant petals
-      const layerOffset = (i%3)/6;
-      drawPetal(px, py, a + Math.sin(i+time*0.001)/12, len, wid, toneA, toneB, layerOffset, 0.98 - (i/petalCount)*0.18);
-    }
-
-    // small top petals and center
-    // inner small petals (whitish)
-    for(let k=0;k<5;k++){
-      const a = baseAngle + (k/5)*TAU - 0.2;
-      drawPetal(x + Math.cos(a)*6*scale, y + Math.sin(a)*-2*scale, a, 28*scale, 12*scale, '#fffafc', petalTone[2], 0, 1);
-    }
-
-    // center
-    ctx.save();
-    ctx.translate(x, y);
-    const innerGrad = ctx.createRadialGradient(0,0,4, 0,0,28*scale);
-    innerGrad.addColorStop(0, '#fff1a8');
-    innerGrad.addColorStop(0.4, '#ffd166');
-    innerGrad.addColorStop(1, 'rgba(255,190,60,0.06)');
-    ctx.fillStyle = innerGrad;
-    ctx.beginPath();
-    ctx.arc(0,0,22*scale,0,TAU);
-    ctx.fill();
-    // small specks
-    for(let s=0;s<6;s++){
-      ctx.beginPath();
-      const rx = Math.cos(s*1.1 + time*0.002) * (6*scale);
-      const ry = Math.sin(s*1.3 + time*0.002) * (4*scale);
-      ctx.fillStyle = 'rgba(255,230,170,0.9)';
-      ctx.arc(rx, ry, 2*scale,0,TAU);
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // soft glow around flower
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    const glow = ctx.createRadialGradient(x,y,10*scale, x,y,80*scale);
-    glow.addColorStop(0, 'rgba(255,220,220,0.18)');
-    glow.addColorStop(0.4, 'rgba(255,200,240,0.06)');
-    glow.addColorStop(1, 'rgba(255,200,255,0)');
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(x,y,80*scale,0,TAU);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // fireflies
-  function updateFireflies(dt) {
-    for(const f of fireflies) {
-      f.x += f.vx * dt * 0.06 + Math.sin(f.phase*1.9)*0.02;
-      f.y += f.vy * dt * 0.06 + Math.cos(f.phase*1.1)*0.01;
-      f.phase += 0.012;
-      if(f.x < -20) f.x = W()+20;
-      if(f.x > W()+20) f.x = -20;
-      if(f.y < -20) f.y = H()+20;
-      if(f.y > H()+20) f.y = -20;
-    }
-  }
-  function drawFireflies(time) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    for(const f of fireflies){
-      const a = 0.4 + 0.6 * Math.abs(Math.sin(f.phase*1.2 + time*0.002));
-      const rad = 12 * f.r;
-      const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, rad);
-      g.addColorStop(0, `rgba(255,250,200,${0.6*a*f.glow})`);
-      g.addColorStop(0.3, `rgba(255,200,150,${0.18*a*f.glow})`);
-      g.addColorStop(1, 'rgba(255,200,150,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(f.x, f.y, rad, 0, TAU);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  // subtle water ripple under each lily (animated concentric alpha rings)
-  function ripple(x,y,scale, t) {
-    ctx.save();
-    ctx.translate(x,y+14*scale);
-    ctx.globalCompositeOperation = 'source-over';
-    for(let i=0;i<2;i++){
-      const phase = (t*0.001 + i*1.2) % TAU;
-      const rr = 40*scale + (phase/TAU)*28*scale;
-      ctx.beginPath();
-      ctx.strokeStyle = `rgba(180,220,255,${0.035 - i*0.008})`;
-      ctx.lineWidth = 2 * (0.8 - i*0.18) * scale;
-      ctx.arc(0,0,rr,0,TAU);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  // main loop
-  let last = performance.now();
-  function loop(t) {
-    const now = t;
-    const dt = now - last;
-    last = now;
-
-    // draw BG
-    drawBackground();
-    drawWaterShimmer(now);
-
-    // update fireflies
-    updateFireflies(dt);
-    drawFireflies(now);
-
-    // draw lilies back-to-front
-    for(let i=0;i<lilies.length;i++){
-      const L = lilies[i];
-      // floating motion
-      L.floatPhase += dt*0.0012;
-      const floatY = Math.sin(L.floatPhase)*6 * L.scale;
-      // adjust x slightly for gentle sway
-      const sway = Math.sin(L.floatPhase*0.8)*6 * L.scale;
-      // draw ripple
-      ripple(L.x + sway, L.y + floatY, L.scale, now + i*400);
-    }
-
-    // draw leaves behind (a couple bigger pads)
-    drawLeaf(W()*0.24, centerY + 42, 1.1, -0.6, '#1b7b4f');
-    drawLeaf(W()*0.48, centerY + 60, 1.3, 0.08, '#0f5b3d');
-    drawLeaf(W()*0.78, centerY + 40, 1.0, 0.5, '#1b7b4f');
-
-    // draw lilies (flowers and stems)
-    // order them so center is a bit forward
-    const order = [0,2,1];
-    for(const idx of order){
-      const L = lilies[idx];
-      const floatY = Math.sin(L.floatPhase)*6 * L.scale;
-      drawLily(L.x + Math.sin(L.floatPhase*0.6)*4, L.y + floatY, L.scale, now, L);
-    }
-
-    // small sparkle particles near center area
-    if(Math.random() < 0.03) {
-      const sx = W()*0.5 + rand(-100,100);
-      const sy = centerY - 40 + rand(-40,30);
-      ctx.fillStyle = 'rgba(255,240,200,0.08)';
-      ctx.beginPath(); ctx.arc(sx, sy, rand(1,3), 0, TAU); ctx.fill();
-    }
-
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
-
-  // touch / mouse interaction: spawn a brief cluster of fireflies
-  canvas.addEventListener('pointerdown', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    for(let i=0;i<6;i++){
-      fireflies.push({
-        x: x + rand(-20,20),
-        y: y + rand(-12,12),
-        r: rand(1,2), vx: rand(-0.6,0.6), vy: rand(-0.2,0.2),
-        phase: Math.random()*TAU, glow: rand(0.5,1)
-      });
-    }
-    // keep array trim
-    if(fireflies.length > 60) fireflies.splice(0, fireflies.length - 60);
-  });
-
-})();
+});
 </script>
 </body>
 </html>
